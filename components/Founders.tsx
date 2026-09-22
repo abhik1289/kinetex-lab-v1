@@ -15,6 +15,18 @@ type Position = 'left2' | 'left1' | 'center' | 'right1' | 'right2' | 'hidden';
 const Founders = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentIndex1, setCurrentIndex1] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const updateViewport = () => setIsDesktop(window.innerWidth >= 1024);
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+
+    return () => window.removeEventListener('resize', updateViewport);
+  }, []);
   
   const members: Member[] = [
     {
@@ -210,7 +222,6 @@ const Founders = () => {
       <div className="flex-1 flex items-center justify-center relative">
         <div className="relative w-full h-64 sm:h-80 lg:h-96 flex items-center justify-center">
           {(() => {
-            const isDesktop = typeof window !== 'undefined' ? window.innerWidth >= 1024 : true;
             return membersList.map((member, index) => {
               const position = getCardPosition(index, currentIdx, membersList.length);
 
@@ -219,8 +230,8 @@ const Founders = () => {
                 key={member.id}
                 className="absolute"
                 animate={{
-                  x: window.innerWidth >= 1024 ? getTransformValue(position) : getMobileTransformValue(position),
-                  scale: window.innerWidth >= 1024 ? getScaleValue(position) : getMobileScaleValue(position),
+                  x: isDesktop ? getTransformValue(position) : getMobileTransformValue(position),
+                  scale: isDesktop ? getScaleValue(position) : getMobileScaleValue(position),
                   opacity: getOpacity(position),
                   zIndex: getZIndex(position)
                 }}
@@ -239,7 +250,7 @@ const Founders = () => {
                       : 'border-gray-700'
                   } transition-all duration-800`}
                   whileHover={position === 'center' ? { 
-                    scale: window.innerWidth >= 1024 ? 1.05 : 1.02,
+                    scale: isDesktop ? 1.05 : 1.02,
                     boxShadow: "0 25px 50px rgba(0, 255, 255, 0.3)"
                   } : {}}
                 >
