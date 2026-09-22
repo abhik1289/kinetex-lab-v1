@@ -148,7 +148,7 @@ export default function Navbar() {
             </div>
 
             {/* Get Started Button */}
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <Link href="/signin">
                 <motion.button
                   className="cursor-pointer bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:shadow-blue-500/25 text-white px-4 py-2 md:px-6 md:py-2 text-sm md:text-base rounded-lg transition-all duration-200 hover:shadow-lg"
@@ -161,7 +161,7 @@ export default function Navbar() {
                   Get Started
                 </motion.button>
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
       </motion.nav>
@@ -204,7 +204,7 @@ export default function Navbar() {
 
               {/* Mobile Navigation Links */}
               <div className="flex flex-col space-y-6">
-                {["Home", "About", "Events", "Contact", "Recruitment"].map((item, index) => (
+                {["Home", "About", "Events"].map((item, index) => (
                   <Link
                     key={item}
                     href={item === "Contact" ? "/contact" : item === "Recruitment" ? "/recruitment" : item === "About" ? "/about" :  item === "Events" ? "/events" : "/"}
