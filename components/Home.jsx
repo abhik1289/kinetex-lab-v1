@@ -11,14 +11,14 @@ const KietexHome = () => {
   const molecularSystemRef = useRef(null);
   const cameraRef = useRef(null);
   const animationRef = useRef(null);
-  
+
 
   // Check if device is mobile/tablet
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); 
+      setIsMobile(window.innerWidth < 1024);
     };
 
     checkMobile();
@@ -642,9 +642,8 @@ const KietexHome = () => {
     const particles = Array.from({ length: particleCount }, (_, i) => (
       <motion.div
         key={i}
-        className={`absolute rounded-full ${
-          isMobile ? "opacity-20" : "opacity-40"
-        }`}
+        className={`absolute rounded-full ${isMobile ? "opacity-20" : "opacity-40"
+          }`}
         initial={{ opacity: 0, scale: 0 }}
         animate={{
           opacity: isMobile ? [0.1, 0.4, 0.1] : [0.2, 0.8, 0.2],
@@ -659,12 +658,10 @@ const KietexHome = () => {
           delay: Math.random() * (isMobile ? 4 : 6),
         }}
         style={{
-          width: `${
-            isMobile ? 1 + Math.random() * 2 : 2 + Math.random() * 4
-          }px`,
-          height: `${
-            isMobile ? 1 + Math.random() * 2 : 2 + Math.random() * 4
-          }px`,
+          width: `${isMobile ? 1 + Math.random() * 2 : 2 + Math.random() * 4
+            }px`,
+          height: `${isMobile ? 1 + Math.random() * 2 : 2 + Math.random() * 4
+            }px`,
           backgroundColor: ["#00ffff", "#0088ff", "#8800ff", "#ff0088"][
             Math.floor(Math.random() * 4)
           ],
@@ -796,46 +793,41 @@ const KietexHome = () => {
       <div className="flex items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl w-full mx-auto">
           <div
-            className={`grid grid-cols-1 ${
-              !isMobile ? "lg:grid-cols-2" : ""
-            } gap-8 items-center`}
+            className={`grid grid-cols-1 ${!isMobile ? "lg:grid-cols-2" : ""
+              } gap-8 items-center`}
           >
             {/* Left Content */}
             <motion.div
-              className={`z-10 ${
-                !isMobile ? "order-2 lg:order-1" : "text-center"
-              }`}
+              className={`z-10 ${!isMobile ? "order-2 lg:order-1" : "text-center"
+                }`}
               variants={contentVariants}
               initial="initial"
               animate="animate"
             >
               <motion.div
-                className={`flex ${
-                  isMobile ? "justify-center" : ""
-                } items-center text-white mb-3 sm:mb-4 md:mb-6`}
+                className={`flex ${isMobile ? "justify-center" : ""
+                  } items-center text-white mb-3 sm:mb-4 md:mb-6`}
                 whileHover={{ color: "#0088ff" }}
                 transition={{ duration: 0.3 }}
               >
                 <img
                   src="/images/logo1.png"
                   className="w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 xl:w-24 xl:h-24 cursor-pointer "
-                  whileHover={!isMobile ? { rotate: 360 } : {}}
-                  transition={{ duration: 0.8 }}
+                  whilehover={{ y: -5 }}
+                  transition={{ duration: 0.2 }}
                 />
                 <div
-                  className={`flex flex-row items-baseline gap-1 sm:gap-3 ${
-                    isMobile
+                  className={`flex flex-row items-baseline gap-1 sm:gap-3 ${isMobile
                       ? "text-2xl"
                       : "text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
-                  }`}
+                    }`}
                 >
                   <span className="font-bold">inetex</span>
                   <motion.span
-                    className={`${
-                      isMobile
+                    className={`${isMobile
                         ? "text-sm"
                         : "text-lg sm:text-xl md:text-2xl lg:text-3xl"
-                    } text-green-300 font-medium italic`}
+                      } text-green-300 font-medium italic`}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.5, duration: 0.6 }}
@@ -846,31 +838,27 @@ const KietexHome = () => {
               </motion.div>
 
               <motion.h1
-                className={`${
-                  isMobile
+                className={`${isMobile
                     ? "text-2xl mb-10"
                     : "text-2xl sm:text-3xl md:text-4xl lg:text-6xl"
-                } font-bold text-white mb-2 sm:mb-3 md:mb-4 leading-tight ${
-                  isMobile ? "px-2" : ""
-                }`}
+                  } font-bold text-white mb-2 sm:mb-3 md:mb-4 leading-tight ${isMobile ? "px-2" : ""
+                  }`}
                 initial={{ opacity: 0, y: isMobile ? 20 : 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.5 }}
               >
                 Innovating Across
                 <div
-                  className={`relative ${
-                    isMobile ? "h-8" : "h-20 md:h-24"
-                  } overflow-hidden mt-1 sm:mt-2`}
+                  className={`relative ${isMobile ? "h-8" : "h-20 md:h-24"
+                    } overflow-hidden mt-1 sm:mt-2`}
                 >
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={currentText}
-                      className={`absolute ${
-                        isMobile
+                      className={`absolute ${isMobile
                           ? "inset-0 flex items-center justify-center"
                           : "block"
-                      } bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent`}
+                        } bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent`}
                       variants={textAnimation}
                       initial="initial"
                       animate="animate"
@@ -885,13 +873,11 @@ const KietexHome = () => {
               </motion.h1>
 
               <motion.p
-                className={`${
-                  isMobile
+                className={`${isMobile
                     ? "text-sm"
                     : "text-sm sm:text-base md:text-lg lg:text-xl"
-                } text-gray-300 mb-4 sm:mb-6 md:mb-8 leading-relaxed ${
-                  isMobile ? "max-w-sm mx-auto px-3" : "max-w-lg"
-                }`}
+                  } text-gray-300 mb-4 sm:mb-6 md:mb-8 leading-relaxed ${isMobile ? "max-w-sm mx-auto px-3" : "max-w-lg"
+                  }`}
                 initial={{ opacity: 0, y: isMobile ? 15 : 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
@@ -903,11 +889,9 @@ const KietexHome = () => {
 
               {/* Statistics Section */}
               <motion.div
-                className={`grid ${
-                  isMobile ? "grid-cols-3" : "grid-cols-2 sm:grid-cols-4"
-                } gap-2 sm:gap-4 md:gap-6 mt-6 sm:mt-8 md:mt-12 ${
-                  isMobile ? "px-3 sm:px-4" : ""
-                }`}
+                className={`grid ${isMobile ? "grid-cols-3" : "grid-cols-2 sm:grid-cols-4"
+                  } gap-2 sm:gap-4 md:gap-6 mt-6 sm:mt-8 md:mt-12 ${isMobile ? "px-3 sm:px-4" : ""
+                  }`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.4 }}
@@ -938,13 +922,11 @@ const KietexHome = () => {
                     whileHover={{ scale: 1.05 }}
                   >
                     <motion.div
-                      className={`${
-                        isMobile
+                      className={`${isMobile
                           ? "text-lg"
                           : "text-xl sm:text-2xl md:text-3xl lg:text-4xl"
-                      } font-bold bg-gradient-to-r ${
-                        stat.color
-                      } bg-clip-text text-transparent mb-1 sm:mb-2`}
+                        } font-bold bg-gradient-to-r ${stat.color
+                        } bg-clip-text text-transparent mb-1 sm:mb-2`}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{
@@ -956,9 +938,8 @@ const KietexHome = () => {
                       {stat.number}
                     </motion.div>
                     <div
-                      className={`${
-                        isMobile ? "text-sm" : "text-xs sm:text-sm"
-                      } text-gray-400 group-hover:text-gray-300 transition-colors duration-300`}
+                      className={`${isMobile ? "text-sm" : "text-xs sm:text-sm"
+                        } text-gray-400 group-hover:text-gray-300 transition-colors duration-300`}
                     >
                       {stat.label}
                     </div>
@@ -978,9 +959,8 @@ const KietexHome = () => {
                 <div className="text-center relative">
                   <motion.div
                     ref={mountRef}
-                    className={`w-[800px] h-[800px] max-w-full relative select-none ${
-                      isDragging ? "cursor-grabbing" : "cursor-grab"
-                    } transition-all duration-300`}
+                    className={`w-[800px] h-[800px] max-w-full relative select-none ${isDragging ? "cursor-grabbing" : "cursor-grab"
+                      } transition-all duration-300`}
                     style={{
                       filter:
                         "drop-shadow(0 0 60px rgba(0, 255, 255, 0.4)) drop-shadow(0 0 120px rgba(0, 136, 255, 0.2))",
@@ -999,9 +979,8 @@ const KietexHome = () => {
 
       {/* Enhanced Scroll Indicator */}
       <motion.div
-        className={`absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-gray-400 z-20 ${
-          isMobile ? "hidden sm:block" : ""
-        }`}
+        className={`absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 text-gray-400 z-20 ${isMobile ? "hidden sm:block" : ""
+          }`}
         initial={{ opacity: 0, y: isMobile ? 30 : 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: isMobile ? 2 : 2.5, duration: 0.8 }}
@@ -1050,9 +1029,8 @@ const KietexHome = () => {
         <div
           className="w-full h-full"
           style={{
-            backgroundImage: `radial-gradient(circle at ${
-              isMobile ? "1px 1px" : "2px 2px"
-            }, rgba(0, 255, 255, 0.3) 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at ${isMobile ? "1px 1px" : "2px 2px"
+              }, rgba(0, 255, 255, 0.3) 1px, transparent 0)`,
             backgroundSize: isMobile ? "30px 30px" : "50px 50px",
           }}
         />
