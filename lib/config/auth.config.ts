@@ -5,6 +5,9 @@ import { authEnv } from "@/lib/config/env"
 
 export const authConfig = {
   secret: authEnv.secret,
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     Google({
       clientId: authEnv.googleClientId,
