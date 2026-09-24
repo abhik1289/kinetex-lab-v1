@@ -1,35 +1,25 @@
-"use client"
+"use client";
 
-import KinetexFooter from '@/components/common/footer';
-import Navbar from '@/components/common/Navbar';
-import { usePathname } from 'next/navigation'
-import React from 'react'
+import KinetexFooter from "@/components/common/footer";
+import Navbar from "@/components/common/Navbar";
+import { usePathname } from "next/navigation";
+import React from "react";
 
-function MainLayout({ children }: {
-    children: React.ReactNode
-}) {
+function MainLayout({ children }: { children: React.ReactNode }) {
+  const path = usePathname();
 
-    const path = usePathname();
+  console.log(path);
 
-    console.log(path)
-
-    if (path === "/event-kbc") {
-        return (<>
-            {children}
-        </>)
-    } else {
-
-
-
-        return (
-            <>
-                <Navbar />
-                {children}
-                <KinetexFooter />
-            </>
-
-
-        )
-    }
+  if (path === "/event-kbc-page-test-01") {
+    return <>{children}</>;
+  } else {
+    return (
+      <>
+        <Navbar />
+        {children}
+        <KinetexFooter />
+      </>
+    );
+  }
 }
-export default MainLayout
+export default MainLayout;
