@@ -1,9 +1,11 @@
+// "use client"
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Montserrat } from "next/font/google";
-import "@/app/globals.css";
-import Navbar from "@/components/common/Navbar";
-import KinetexFooter from "@/components/common/footer";
 
+// import { usePathname } from "next/navigation";
+import MainLayout from "@/lib/layouts/main-layout";
+import "@/app/globals.css"
 
 
 const montserrat = Montserrat({
@@ -19,14 +21,20 @@ export const metadata: Metadata = {
 
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+
+
+  // const location = usePathname();
+
+
+
   return (
     <html
       lang="en"
       className={`${montserrat.variable}  h-full antialiased  font-montserrat`}>
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        {children}
-        <KinetexFooter />
+        <MainLayout>
+          {children}
+        </MainLayout>
       </body>
     </html>
   );

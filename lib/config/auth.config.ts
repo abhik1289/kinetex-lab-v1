@@ -8,6 +8,17 @@ export const authConfig = {
   session: {
     strategy: "jwt",
   },
+  cookies: {
+    sessionToken: {
+      name: "kinetex.authjs.session-token.v2",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   providers: [
     Google({
       clientId: authEnv.googleClientId,
