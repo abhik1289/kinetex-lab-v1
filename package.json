@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "prisma:generate": "prisma generate",
-    "contract:emit": "prisma contract emit"
+    "contract:emit": "prisma contract emit",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
