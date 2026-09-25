@@ -8,12 +8,7 @@ import { signIn } from "next-auth/react";
 
 function GoogleIcon() {
   return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="#4285F4"
         d="M21.805 12.23c0-.71-.064-1.397-.182-2.057H12v3.893h5.498a4.7 4.7 0 0 1-2.04 3.085v2.526h3.304c1.934-1.78 3.043-4.402 3.043-7.447Z"
@@ -40,7 +35,7 @@ export default function GoogleLogin() {
   const handleLogin = async () => {
     try {
       setIsLoading(true);
-      await signIn("google", { redirectTo: "/dashboard" });
+      await signIn("google", { redirectTo: "/register" });
     } finally {
       setIsLoading(false);
     }
@@ -58,8 +53,7 @@ export default function GoogleLogin() {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.5"
-              aria-hidden="true"
-            >
+              aria-hidden="true">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -86,9 +80,7 @@ export default function GoogleLogin() {
         <div className="rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
           <div className="space-y-6">
             <div className="space-y-1 text-center">
-              <h2 className="text-lg font-semibold tracking-tight">
-                Sign in
-              </h2>
+              <h2 className="text-lg font-semibold tracking-tight">Sign in</h2>
 
               <p className="text-sm text-muted-foreground">
                 Use your Google account to get started.
@@ -101,8 +93,7 @@ export default function GoogleLogin() {
               variant="outline"
               className="h-12 w-full gap-3 rounded-xl border-border bg-background font-medium shadow-none transition-all duration-200 hover:bg-muted/60 hover:shadow-sm active:scale-[0.99]"
               onClick={handleLogin}
-              disabled={isLoading}
-            >
+              disabled={isLoading}>
               {isLoading ? (
                 <Loader2 className="size-5 animate-spin" />
               ) : (
@@ -110,9 +101,7 @@ export default function GoogleLogin() {
               )}
 
               <span>
-                {isLoading
-                  ? "Signing in..."
-                  : "Continue with Google"}
+                {isLoading ? "Signing in..." : "Continue with Google"}
               </span>
             </Button>
 
@@ -121,15 +110,13 @@ export default function GoogleLogin() {
               By continuing, you agree to our{" "}
               <a
                 href="/terms"
-                className="underline underline-offset-4 hover:text-foreground"
-              >
+                className="underline underline-offset-4 hover:text-foreground">
                 Terms of Service
               </a>{" "}
               and{" "}
               <a
                 href="/privacy"
-                className="underline underline-offset-4 hover:text-foreground"
-              >
+                className="underline underline-offset-4 hover:text-foreground">
                 Privacy Policy
               </a>
               .

@@ -13,10 +13,26 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  rollNo        String?
+  mobile        String?
+  isLeader      Boolean   @default(false)
+  teamId        String?   @db.ObjectId
+  team          Team?     @relation(fields: [teamId], references: [id])
   accounts      Account[]
   sessions      Session[]
 
   @@map("auth_users")
+}
+
+model Team {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String   @unique
+  inviteToken  String   @unique
+  leaderEmail  String
+  leaderRollNo String
+  leaderMobile String
+  members      User[]
+  createdAt    DateTime @default(now())
 }
 
 model Account {
