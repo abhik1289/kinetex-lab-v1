@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { FaInstagram } from "react-icons/fa";
 import {
   ArrowUpRight,
   ExternalLink,
@@ -219,7 +220,7 @@ export default function EventFooter() {
                 rel="noreferrer"
                 aria-label="Kinetex Lab on Instagram"
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/55 transition-all duration-300 hover:border-yellow-300/40 hover:bg-yellow-300 hover:text-[#17102F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300">
-                {/* <Instagram className="h-4 w-4" aria-hidden="true" /> */}
+                <FaInstagram />
               </a>
 
               <a

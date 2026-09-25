@@ -1,204 +1,247 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
-  ArrowRight,
+  ArrowUpRight,
   CalendarDays,
   CheckCircle2,
-  Code2,
+  Clock3,
   Sparkles,
   Trophy,
-  Users,
 } from "lucide-react";
-import Link from "next/link";
 
-function Page() {
+type TimeLeft = {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  isOpen: boolean;
+};
+
+const getNextSundayMidnight = () => {
+  const now = new Date();
+  const target = new Date(now);
+
+  const currentDay = now.getDay();
+  const daysUntilSunday = (7 - currentDay) % 7;
+
+  target.setDate(now.getDate() + daysUntilSunday);
+  target.setHours(0, 0, 0, 0);
+
+  // If it is already Sunday midnight or later,
+  // target the following Sunday.
+  if (target.getTime() <= now.getTime()) {
+    target.setDate(target.getDate() + 7);
+  }
+
+  return target.getTime();
+};
+
+const getTimeLeft = (targetTime: number): TimeLeft => {
+  const difference = Math.max(0, targetTime - Date.now());
+
+  const totalSeconds = Math.floor(difference / 1000);
+
+  const days = Math.floor(totalSeconds / (24 * 60 * 60));
+  const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+  const seconds = totalSeconds % 60;
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+    isOpen: difference <= 0,
+  };
+};
+
+const formatNumber = (value: number) => {
+  return String(value).padStart(2, "0");
+};
+
+const timeUnits = [
+  { key: "days", label: "Days" },
+  { key: "hours", label: "Hours" },
+  { key: "minutes", label: "Minutes" },
+  { key: "seconds", label: "Seconds" },
+] as const;
+
+function TimeCard({
+  value,
+  label,
+  highlight = false,
+}: {
+  value: number;
+  label: string;
+  highlight?: boolean;
+}) {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050816] text-white">
-      {/* Background Glow */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-10%] top-[-10%] h-[400px] w-[400px] rounded-full bg-violet-600/20 blur-[140px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] h-[400px] w-[400px] rounded-full bg-cyan-500/10 blur-[140px]" />
+    <div
+      className={[
+        "group relative overflow-hidden rounded-2xl border p-4 text-center backdrop-blur-xl transition-all duration-300 sm:p-5",
+        highlight
+          ? "border-yellow-300/30 bg-yellow-300/[0.09] shadow-[0_0_35px_rgba(250,204,21,0.08)]"
+          : "border-white/10 bg-white/[0.045] hover:border-yellow-300/20",
+      ].join(" ")}>
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-yellow-300/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-        <div
-          className="absolute inset-0 opacity-[0.035]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#ffffff 1px, transparent 1px), linear-gradient(90deg, #ffffff 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
+      <div
+        className={[
+          "text-3xl font-black tracking-[-0.06em] tabular-nums sm:text-4xl md:text-5xl",
+          highlight ? "text-yellow-300" : "text-white",
+        ].join(" ")}>
+        {formatNumber(value)}
       </div>
 
-      {/* Navigation */}
-      <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6 lg:px-10">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
-            <Code2 className="h-5 w-5 text-cyan-400" />
-          </div>
-
-          <div>
-            <p className="text-sm font-bold tracking-[0.2em] text-white">
-              KINETEX
-            </p>
-            <p className="text-[10px] tracking-[0.3em] text-white/40">
-              LAB · KIIT
-            </p>
-          </div>
-        </Link>
-
-        <Link
-          href="/"
-          className="text-sm text-white/60 transition hover:text-white">
-          Back to Home
-        </Link>
-      </nav>
-
-      {/* Hero */}
-      <section className="relative z-10 mx-auto flex min-h-[calc(100vh-100px)] max-w-5xl items-center justify-center px-6 py-16 text-center lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="flex w-full flex-col items-center">
-          {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/5 px-4 py-2 text-xs font-medium uppercase tracking-[0.18em] text-cyan-300">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan-400" />
-            </span>
-            Registration Portal
-          </div>
-
-          {/* Heading */}
-          <h1 className="max-w-4xl text-5xl font-black leading-[1.05] tracking-tight sm:text-6xl lg:text-8xl">
-            The Game Is
-            <br />
-            <span className="bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-              About to Begin.
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="mt-7 max-w-xl text-base leading-8 text-white/55 sm:text-lg">
-            Think you have what it takes to become the next Codepati? Prepare
-            yourself for a journey of quizzes, coding challenges, and
-            innovation.
-          </p>
-
-          {/* Coming Soon Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="relative mt-12 w-full max-w-2xl overflow-hidden rounded-3xl border border-white/10 bg-white/[0.035] p-7 shadow-2xl shadow-violet-950/20 backdrop-blur-xl sm:p-10">
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent" />
-
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-violet-400/20 bg-violet-500/10">
-              <Sparkles className="h-7 w-7 text-violet-300" />
-            </div>
-
-            <h2 className="mt-6 text-2xl font-bold sm:text-3xl">
-              Registration Opens Soon
-            </h2>
-
-            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-white/50 sm:text-base">
-              We are getting everything ready for you. Stay tuned for the
-              official registration announcement.
-            </p>
-
-            {/* Status */}
-            <div className="mt-8 flex items-center justify-center gap-3 rounded-2xl border border-white/5 bg-black/20 px-4 py-4">
-              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-              <span className="text-sm font-medium text-white/80">
-                The arena is being prepared
-              </span>
-            </div>
-
-            {/* Event Details */}
-            <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="rounded-xl border border-white/5 bg-white/[0.025] p-4">
-                <Trophy className="mx-auto h-5 w-5 text-amber-300" />
-                <p className="mt-2 text-xs text-white/40">Event</p>
-                <p className="mt-1 text-sm font-semibold">Codepati</p>
-              </div>
-
-              <div className="rounded-xl border border-white/5 bg-white/[0.025] p-4">
-                <Users className="mx-auto h-5 w-5 text-cyan-300" />
-                <p className="mt-2 text-xs text-white/40">Community</p>
-                <p className="mt-1 text-sm font-semibold">Kinetex Lab</p>
-              </div>
-
-              <div className="rounded-xl border border-white/5 bg-white/[0.025] p-4">
-                <CalendarDays className="mx-auto h-5 w-5 text-violet-300" />
-                <p className="mt-2 text-xs text-white/40">Status</p>
-                <p className="mt-1 text-sm font-semibold">Coming Soon</p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* CTA */}
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
-            <Link
-              href="/"
-              className="group inline-flex items-center justify-center gap-3 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-black transition hover:bg-cyan-300">
-              Explore the Event
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-
-            <a
-              href="#event-details"
-              className="inline-flex items-center justify-center rounded-full border border-white/10 px-7 py-3.5 text-sm font-medium text-white/70 transition hover:border-white/30 hover:text-white">
-              Learn More
-            </a>
-          </div>
-
-          {/* Bottom Note */}
-          <p className="mt-12 text-xs tracking-wide text-white/25">
-            Built with passion by Kinetex Lab · KIIT
-          </p>
-        </motion.div>
-      </section>
-
-      {/* Event Details */}
-      <section
-        id="event-details"
-        className="relative z-10 mx-auto max-w-5xl px-6 pb-24 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-3">
-          {[
-            {
-              icon: Trophy,
-              title: "Quiz",
-              description: "Test your knowledge.",
-            },
-            {
-              icon: Code2,
-              title: "Hack",
-              description: "Build something innovative.",
-            },
-            {
-              icon: Sparkles,
-              title: "Pitch & Crown",
-              description: "Present your ideas and shine.",
-            },
-          ].map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <div
-                key={item.title}
-                className="rounded-2xl border border-white/10 bg-white/[0.025] p-6 text-center">
-                <Icon className="mx-auto h-6 w-6 text-cyan-300" />
-                <h3 className="mt-4 font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm text-white/45">{item.description}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-    </main>
+      <div className="mt-2 text-[9px] font-bold uppercase tracking-[0.2em] text-white/40 sm:text-[10px]">
+        {label}
+      </div>
+    </div>
   );
 }
 
-export default Page;
+export default function CodepatiCountdown() {
+  const targetTime = useMemo(() => getNextSundayMidnight(), []);
+
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
+    getTimeLeft(targetTime),
+  );
+
+  useEffect(() => {
+    const updateTimer = () => {
+      setTimeLeft(getTimeLeft(targetTime));
+    };
+
+    updateTimer();
+
+    const interval = window.setInterval(updateTimer, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [targetTime]);
+
+  return (
+    <section
+      id="countdown"
+      className="relative isolate overflow-hidden bg-[#100B25] px-6 py-24 text-white sm:px-10 lg:px-16">
+      {/* Background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-yellow-300/[0.06] blur-[130px]" />
+
+        <div className="absolute inset-0 opacity-[0.1] [background-image:linear-gradient(rgba(250,204,21,0.4)_1px,transparent_1px),linear-gradient(90deg,rgba(250,204,21,0.4)_1px,transparent_1px)] [background-size:70px_70px]" />
+
+        <div className="absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-violet-600/20 blur-[120px]" />
+
+        <div className="absolute -right-40 top-0 h-[400px] w-[400px] rounded-full bg-yellow-300/10 blur-[130px]" />
+      </div>
+
+      <div className="mx-auto max-w-5xl">
+        {/* Section Header */}
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-yellow-300/20 bg-yellow-300/[0.06] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-yellow-300">
+            <Sparkles className="h-3.5 w-3.5" />
+            The countdown begins
+          </div>
+
+          <h2 className="text-4xl font-black uppercase leading-[0.95] tracking-[-0.075em] sm:text-5xl md:text-6xl original-surfer-regular">
+            <span className="block text-white">Kon Banega</span>
+            <span className="mt-2 block text-yellow-300">Codepati</span>
+          </h2>
+
+          <p className="mx-auto mt-7 max-w-lg text-[10px] font-bold uppercase tracking-[0.32em] text-white/55 sm:text-xs">
+            Think · Build · Pitch · Win
+          </p>
+        </div>
+
+        {/* Countdown Panel */}
+        <div className="relative mt-12 rounded-[2rem] border border-white/10 bg-white/[0.035] p-5 shadow-2xl shadow-black/20 backdrop-blur-2xl sm:p-8 md:p-10">
+          <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-yellow-300/60 to-transparent" />
+
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-yellow-300/20 bg-yellow-300/[0.08]">
+                <Trophy className="h-5 w-5 text-yellow-300" />
+              </span>
+
+              <div>
+                <p className="text-xs font-bold text-white">Codepati Arena</p>
+                <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-white/35">
+                  Kinetex Lab · KIIT Chapter
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/45">
+              <Clock3 className="h-3.5 w-3.5 text-yellow-300" />
+              {timeLeft.isOpen ? "Live" : "Opening Sunday"}
+            </div>
+          </div>
+
+          {timeLeft.isOpen ? (
+            <div className="py-10 text-center">
+              <CheckCircle2 className="mx-auto h-14 w-14 text-yellow-300" />
+
+              <h3 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
+                The Arena Is Open<span className="text-yellow-300">.</span>
+              </h3>
+
+              <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-white/50">
+                The countdown has ended. Your Codepati journey starts now.
+              </p>
+
+              <Link
+                href="#register"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-yellow-300 px-6 py-3.5 text-sm font-black text-[#100B25] transition-colors hover:bg-yellow-200">
+                Register Now
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 timer_container">
+                {timeUnits.map((unit) => (
+                  <TimeCard
+                    key={unit.key}
+                    label={unit.label}
+                    value={timeLeft[unit.key]}
+                    highlight={unit.key === "seconds"}
+                  />
+                ))}
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-2 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
+                <CalendarDays className="h-3.5 w-3.5 text-yellow-300" />
+                <span>Sunday · 12:00 AM</span>
+              </div>
+            </>
+          )}
+
+          {/* Bottom Accent */}
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <span className="h-px w-12 bg-white/10" />
+            <span className="h-1.5 w-1.5 rounded-full bg-yellow-300 shadow-[0_0_15px_#facc15]" />
+            <span className="h-px w-12 bg-white/10" />
+          </div>
+        </div>
+
+        {/* Event Details */}
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-center text-xs text-white/40">
+          <span className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4 text-yellow-300/70" />
+            2nd & 3rd October 2026
+          </span>
+
+          <span className="hidden h-1 w-1 rounded-full bg-white/20 sm:block" />
+
+          <span className="flex items-center gap-2">
+            <Trophy className="h-4 w-4 text-yellow-300/70" />
+            Quiz · Hack · Pitch · Crown
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
