@@ -9,7 +9,7 @@ const navLinks = [
   { label: "About", href: "#about" },
   { label: "Rounds", href: "#rounds" },
   { label: "FAQs", href: "#faqs" },
-  { label: "Contact", href: "#contact" },
+  // { label: "Contact", href: "#contact" },
 ];
 
 export default function CodepatiNavbar() {
@@ -166,7 +166,7 @@ export default function CodepatiNavbar() {
           </div>
 
           <Link
-            href="#register"
+            href="/event-kbc/registration"
             className="group inline-flex items-center gap-2 rounded-full bg-yellow-300 px-5 py-3 text-xs font-black text-[#100B25] transition-all duration-300 hover:bg-yellow-200 hover:shadow-[0_0_30px_rgba(250,204,21,0.2)]">
             Register Now
             <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -207,7 +207,7 @@ export default function CodepatiNavbar() {
         <div className="my-3 h-px bg-white/10" />
 
         <Link
-          href="#register"
+          href="/event-kbc/registration"
           onClick={closeMenu}
           className="mobile-nav-link group flex items-center justify-center gap-2 rounded-xl bg-yellow-300 px-5 py-3.5 text-sm font-black text-[#100B25] transition-colors hover:bg-yellow-200">
           Register Now

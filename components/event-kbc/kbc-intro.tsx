@@ -230,7 +230,7 @@ export default function EventIntroduction() {
 
             <div className="intro-actions intro-animate mt-8 flex flex-wrap items-center gap-4">
               <Link
-                href="#register"
+                href="/event-kbc/registration"
                 className="group inline-flex items-center gap-3 rounded-full bg-yellow-300 px-6 py-3.5 text-sm font-bold text-[#17102F] transition-all duration-300 hover:bg-yellow-200 hover:shadow-[0_0_30px_rgba(250,204,21,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-4 focus-visible:ring-offset-[#100B25]">
                 Join the Challenge
                 <ArrowUpRight
@@ -423,7 +423,7 @@ export default function EventIntroduction() {
             </div>
 
             <Link
-              href="#register"
+              href="/event-kbc/registration"
               className="group inline-flex w-fit shrink-0 items-center gap-3 rounded-full bg-yellow-300 px-6 py-3.5 text-sm font-bold text-[#17102F] transition-all duration-300 hover:bg-yellow-200 hover:shadow-[0_0_30px_rgba(250,204,21,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-4 focus-visible:ring-offset-[#1A1237]">
               Register Now
               <ArrowUpRight

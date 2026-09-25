@@ -162,7 +162,7 @@ export default function CodepatiHero() {
               </p>
             </div>
 
-            <div className="overflow-hidden [perspective:900px]">
+            <div className="overflow-hidden [perspective:900px] original-surfer-regular">
               <h1 className="font-heading text-3xl font-black leading-[0.95] tracking-[-0.06em] sm:text-7xl lg:text-[6.5rem]">
                 <span className="hero-reveal hero-title-line block">The</span>
 
@@ -214,7 +214,7 @@ export default function CodepatiHero() {
             {/* CTA */}
             <div className="hero-reveal hero-actions mt-9 flex flex-wrap items-center gap-5">
               <Link
-                href="#register"
+                href="/event-kbc/registration"
                 className="group inline-flex items-center justify-center gap-3 rounded-full bg-yellow-300 px-6 py-4 text-sm font-bold text-[#100B25] shadow-[0_0_35px_rgba(250,204,21,0.18)] transition-all duration-300 hover:bg-yellow-200 hover:shadow-[0_0_45px_rgba(250,204,21,0.35)]">
                 Register Now
                 <ArrowUpRight className="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
