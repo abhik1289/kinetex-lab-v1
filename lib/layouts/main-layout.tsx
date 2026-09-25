@@ -10,7 +10,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
   console.log(path);
 
-  if (path === "/event-kbc-page-test-01") {
+  if (path === "/event-kbc-page-test-01" || path.startsWith("/event-kbc")) {
     return <>{children}</>;
   } else {
     return (
