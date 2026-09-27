@@ -38,21 +38,9 @@ type TimeLeft = {
 };
 
 const getNextSundayMidnight = () => {
-  const now = new Date();
-  const target = new Date(now);
+  const target = new Date();
 
-  const currentDay = now.getDay();
-  const daysUntilSunday = (7 - currentDay) % 7;
-
-  target.setDate(now.getDate() + daysUntilSunday);
-  target.setHours(0, 0, 0, 0);
-
-  // If it is already Sunday midnight or later,
-  // target the following Sunday.
-  if (target.getTime() <= now.getTime()) {
-    target.setDate(target.getDate() + 7);
-  }
-
+  target.setHours(12, 0, 0, 0);
   return target.getTime();
 };
 
