@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ArrowUpRight, Menu, Sparkles, Trophy, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -16,6 +17,9 @@ export default function CodepatiNavbar() {
   const navRef = useRef<HTMLElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { status } = useSession();
+  const registrationLabel =
+    status === "authenticated" ? "My Registration" : "Register Now";
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -168,7 +172,7 @@ export default function CodepatiNavbar() {
           <Link
             href="/event-kbc/registration"
             className="group inline-flex items-center gap-2 rounded-full bg-yellow-300 px-5 py-3 text-xs font-black text-[#100B25] transition-all duration-300 hover:bg-yellow-200 hover:shadow-[0_0_30px_rgba(250,204,21,0.2)]">
-            Register Now
+            {registrationLabel}
             <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </Link>
         </div>
@@ -210,7 +214,7 @@ export default function CodepatiNavbar() {
           href="/event-kbc/registration"
           onClick={closeMenu}
           className="mobile-nav-link group flex items-center justify-center gap-2 rounded-xl bg-yellow-300 px-5 py-3.5 text-sm font-black text-[#100B25] transition-colors hover:bg-yellow-200">
-          Register Now
+          {registrationLabel}
           <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </Link>
 

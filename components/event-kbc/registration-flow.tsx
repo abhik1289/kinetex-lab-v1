@@ -2,7 +2,7 @@
 
 import { useDeferredValue, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -14,6 +14,7 @@ import {
   Crown,
   Link2,
   Loader2,
+  LogOut,
   LockKeyhole,
   MapPin,
   Share2,
@@ -22,6 +23,7 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
 
 const stages = ["Tech Quiz", "Hack It", "Pitch It", "Codepati Crown"];
@@ -316,18 +318,33 @@ export default function RegistrationFlow() {
       </div>
 
       <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-7xl flex-col">
-        <header className="flex items-center justify-between">
+        <header className="flex items-center justify-between ">
           <Link
             href="/event-kbc"
             className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-white/50 transition-colors hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300">
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Back to the arena
           </Link>
-          <div className="flex items-center gap-2 text-xs font-black tracking-[0.18em] text-white sm:text-sm">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-yellow-300/20 bg-yellow-300/10">
-              <Trophy className="h-4 w-4 text-yellow-300" />
-            </span>
-            CODEPATI<span className="text-yellow-300">.</span>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 text-xs font-black tracking-[0.18em] text-white sm:text-sm">
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-yellow-300/20 bg-yellow-300/10">
+                <Trophy className="h-4 w-4 text-yellow-300" />
+              </span>
+              CODEPATI<span className="text-yellow-300">.</span>
+            </div>
+            {sessionStatus === "authenticated" && (
+              <button
+                type="button"
+                onClick={() => void signOut({ redirectTo: "/event-kbc" })}
+                aria-label="Sign out"
+                title="Sign out"
+                className="group inline-flex h-10 w-10 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] text-white/65 transition-colors hover:border-yellow-300/30 hover:text-yellow-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 sm:w-auto sm:px-3">
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden text-xs font-bold sm:inline">
+                  Sign out
+                </span>
+              </button>
+            )}
           </div>
         </header>
 
@@ -337,7 +354,7 @@ export default function RegistrationFlow() {
               <Sparkles className="h-3.5 w-3.5" /> Registration desk
             </div>
             <h1
-              id="registration-heading"
+              id="registration-heading original-surfer-regular"
               className="mt-7 text-5xl font-black leading-[0.94] tracking-[-0.07em] sm:text-7xl lg:text-[5.4rem]">
               Enter the
               <span className="block text-yellow-300">Codepati Arena.</span>
@@ -446,6 +463,34 @@ export default function RegistrationFlow() {
                       <span className="rounded-full border border-yellow-300/20 bg-yellow-300/[0.06] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-yellow-300">
                         Registered
                       </span>
+                    </div>
+                    <div className="mt-8 flex flex-col gap-4 rounded-2xl border border-yellow-300/15 bg-linear-to-r from-[#26154F]/70 to-[#17102F]/80 p-4 sm:flex-row sm:items-center sm:p-5">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-yellow-300/20 bg-yellow-300/10 text-yellow-300">
+                        <FaWhatsapp className="h-5 w-5" aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-yellow-300">
+                          Event updates
+                        </p>
+                        <h3 className="mt-1 text-sm font-bold text-white">
+                          Join the Codepati WhatsApp group
+                        </h3>
+                        <p className="mt-1 text-xs leading-5 text-white/45">
+                          Get event announcements and important updates in one
+                          place.
+                        </p>
+                      </div>
+                      <a
+                        href="https://chat.whatsapp.com/FNtQ3CEf7Ec3csLUYBjixg"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-yellow-300 px-5 py-3 text-xs font-black text-[#17102F] transition-all hover:bg-yellow-200 hover:shadow-[0_0_25px_rgba(250,204,21,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-4 focus-visible:ring-offset-[#17102F]">
+                        Join WhatsApp
+                        <ArrowUpRight
+                          className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                          aria-hidden="true"
+                        />
+                      </a>
                     </div>
                     <p className="mt-8 text-xs font-bold uppercase tracking-[0.2em] text-yellow-300">
                       {statusQuery.data.isLeader
