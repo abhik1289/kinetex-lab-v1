@@ -5,6 +5,7 @@ import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 
 // import { usePathname } from "next/navigation";
 import MainLayout from "@/lib/layouts/main-layout";
+import Providers from "@/app/providers";
 import "@/app/globals.css";
 
 const montserrat = Montserrat({
@@ -30,7 +31,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${montserrat.variable}  h-full antialiased  font-montserrat`}>
       <body className="min-h-full flex flex-col">
-        <MainLayout>{children}</MainLayout>
+        <Providers>
+          <MainLayout>{children}</MainLayout>
+        </Providers>
       </body>
     </html>
   );

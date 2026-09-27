@@ -3,13 +3,8 @@
 import { useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import gsap from "gsap";
-import {
-  ArrowUpRight,
-  CalendarDays,
-  MapPin,
-  Sparkles,
-  Trophy,
-} from "lucide-react";
+import { ArrowUpRight, CalendarDays, MapPin, Trophy } from "lucide-react";
+import { SiNotion } from "react-icons/si";
 
 export default function CodepatiHero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -151,9 +146,15 @@ export default function CodepatiHero() {
         <div className="grid w-full items-center gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
           {/* Hero Content */}
           <div className="max-w-3xl">
-            <div className="hero-reveal hero-eyebrow mb-7 inline-flex items-center gap-3 rounded-full border border-yellow-300/20 bg-yellow-300/[0.06] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-yellow-300">
-              <Sparkles className="h-4 w-4" />
-              Kinetex Lab · KIIT Chapter
+            <div className="hero-reveal hero-eyebrow mb-7 inline-flex items-center gap-2.5 rounded-full border border-yellow-300/25 bg-yellow-300/[0.06] px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-white">
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-white text-[#100B25]">
+                <SiNotion className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <span className="font-black tracking-normal">Notion</span>
+              <span className="h-3.5 w-px bg-white/20" aria-hidden="true" />
+              <span className="text-[9px] font-bold tracking-[0.14em] text-yellow-300">
+                Official Sponsor
+              </span>
             </div>
 
             <div className="overflow-hidden">
@@ -228,7 +229,7 @@ export default function CodepatiHero() {
               </Link>
             </div>
 
-            <div className="hero-reveal hero-actions mt-8 flex items-center gap-3 text-xs text-white/40">
+            <div className="hero-reveal hero-actions mt-5 flex items-center gap-3 text-xs text-white/40">
               <span className="h-px w-10 bg-yellow-300/50" />
               <span>Quiz · Hack · Pitch · Crown</span>
             </div>
@@ -273,14 +274,27 @@ export default function CodepatiHero() {
                 <p className="mt-1 text-sm font-bold text-white">Hack It</p>
               </div>
 
-              <div className="hero-floating-card absolute right-[0%] top-[8%] rounded-2xl border border-yellow-300/20 bg-yellow-300/[0.08] px-4 py-3 shadow-2xl backdrop-blur-xl">
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-yellow-300/60">
-                  Final Stage
-                </p>
-                <p className="mt-1 text-sm font-bold text-yellow-300">
-                  Codepati
-                </p>
-              </div>
+              <a
+                href="https://www.notion.so/"
+                target="_blank"
+                rel="noreferrer"
+                className="hero-floating-card group absolute right-[0%] top-[8%] inline-flex min-h-16 items-center gap-3 rounded-2xl border border-white/80 bg-white px-3 py-3 text-left text-[#100B25] shadow-2xl transition-transform duration-300 hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-2 focus-visible:ring-offset-[#100B25]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#100B25] text-white">
+                  <SiNotion className="h-6 w-6" aria-hidden="true" />
+                </span>
+                <span>
+                  <span className="block text-[8px] font-bold uppercase tracking-[0.14em] text-black/50">
+                    Official sponsor
+                  </span>
+                  <span className="mt-0.5 block text-sm font-black">
+                    Notion
+                  </span>
+                </span>
+                <ArrowUpRight
+                  className="h-4 w-4 shrink-0 text-black/50 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
+              </a>
 
               <div className="hero-floating-card absolute bottom-[7%] left-[4%] rounded-2xl border border-white/10 bg-[#1d163b]/90 px-4 py-3 shadow-2xl backdrop-blur-xl">
                 <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/40">

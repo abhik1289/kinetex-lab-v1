@@ -1,3 +1,21 @@
+// import { Suspense } from "react";
+// import RegistrationFlow from "@/components/event-kbc/registration-flow";
+
+// function RegistrationFallback() {
+//   return (
+//     <main className="flex min-h-screen items-center justify-center bg-[#100B25] text-yellow-300">
+//       <div className="h-8 w-8 animate-spin rounded-full border-2 border-yellow-300/25 border-t-yellow-300" />
+//     </main>
+//   );
+// }
+
+// export default function RegistrationPage() {
+//   return (
+//     <Suspense fallback={<RegistrationFallback />}>
+//       <RegistrationFlow />
+//     </Suspense>
+//   );
+// }
 "use client";
 
 import { useEffect, useMemo, useState } from "react";

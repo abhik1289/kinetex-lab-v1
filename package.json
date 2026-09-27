@@ -21,6 +21,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@prisma/client": "^6.19.0",
     "@prisma/orm-mongo": "^8.0.0-rc.11",
+    "@tanstack/react-query": "^5.103.2",
     "@tanstack/react-table": "^9.2.4",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",

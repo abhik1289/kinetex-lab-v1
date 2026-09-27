@@ -30,7 +30,7 @@ export const authConfig = {
     signIn: "/sign-in",
   },
   callbacks: {
-    signIn: ({ user }) => Boolean(user.email && isKIITEmail(user.email)),
+    signIn: ({ user }) => Boolean(user.email),
     authorized: ({ auth }) => Boolean(auth?.user),
   },
 } satisfies NextAuthConfig;

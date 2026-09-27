@@ -4,6 +4,7 @@ import KbcAbout from "@/components/event-kbc/kbc-about";
 import KbcFooter from "@/components/event-kbc/kbc-footer";
 import KbcHeader from "@/components/event-kbc/kbc-header";
 import KbcHero from "@/components/event-kbc/kbc-hero";
+import KbcSponsor from "@/components/event-kbc/kbc-sponsor";
 import React from "react";
 import EventFaq from "@/components/event-kbc/kbc-faq";
 import EventIntroduction from "@/components/event-kbc/kbc-intro";
@@ -15,6 +16,7 @@ function page() {
       <KbcHeader />
       <KbcHero />
       <EventIntroduction />
+      <KbcSponsor />
       <KbcJourney />
       <EventFaq />
       <KbcFooter />
