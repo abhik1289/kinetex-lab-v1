@@ -74,7 +74,7 @@ export function AdminsTable() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["admin-admins"] }),
         queryClient.invalidateQueries({
-          queryKey: ["admin-dashboard-summary"]),
+          queryKey: ["admin-dashboard-summary"],
         }),
       ]);
     },
@@ -230,7 +230,9 @@ export function AdminsTable() {
           </div>
           {adminToRemove && (
             <div className="border bg-muted/40 p-3">
-              <p className="font-medium">{adminToRemove.name || "Unnamed admin"}</p>
+              <p className="font-medium">
+                {adminToRemove.name || "Unnamed admin"}
+              </p>
               <p className="text-sm text-muted-foreground">
                 {adminToRemove.email || "No email available"}
               </p>
