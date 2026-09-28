@@ -75,10 +75,244 @@ const getAuthenticatedUser = async () => {
   return { user, email };
 };
 
+const getAuthenticatedAdmin = async () => {
+  const session = await auth();
+  const email = session?.user?.email?.trim().toLowerCase();
+
+  if (!email)
+    return { error: "Sign in required." as const, status: 401 as const };
+
+  const user = await authPrisma.user.findUnique({
+    where: { email },
+    select: { id: true, isAdmin: true },
+  });
+
+  if (!user?.isAdmin) {
+    return {
+      error: "Administrator access required." as const,
+      status: 403 as const,
+    };
+  }
+
+  return { user };
+};
+
 app.get("/hello", (c) => {
   return c.json({
     message: "Hello Next.js!",
   });
+});
+
+app.get("/admin/summary", async (c) => {
+  const admin = await getAuthenticatedAdmin();
+  if ("error" in admin) return c.json({ error: admin.error }, admin.status);
+
+  const [users, teams, admins, vegetarian, nonVegetarian] = await Promise.all([
+    authPrisma.user.count(),
+    authPrisma.team.count(),
+    authPrisma.user.count({ where: { isAdmin: true } }),
+    authPrisma.user.count({ where: { dietaryPreference: "VEG" } }),
+    authPrisma.user.count({ where: { dietaryPreference: "NON_VEG" } }),
+  ]);
+
+  return c.json({ users, teams, admins, vegetarian, nonVegetarian });
+});
+
+app.get("/admin/teams", async (c) => {
+  const admin = await getAuthenticatedAdmin();
+  if ("error" in admin) return c.json({ error: admin.error }, admin.status);
+
+  const teams = await authPrisma.team.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      members: {
+        select: {
+          id: true,
+          name: true,
+          rollNo: true,
+          dietaryPreference: true,
+          isLeader: true,
+        },
+      },
+    },
+  });
+
+  return c.json({
+    teams: teams.map((team) => ({
+      id: team.id,
+      name: team.name,
+      createdAt: team.createdAt.toISOString(),
+      members: team.members.map((member) => ({
+        id: member.id,
+        name: member.name,
+        rollNo: member.rollNo,
+        foodPreference: member.dietaryPreference,
+        isLeader: member.isLeader,
+      })),
+    })),
+    total: teams.length,
+  });
+});
+
+app.get("/admin/users", async (c) => {
+  const admin = await getAuthenticatedAdmin();
+  if ("error" in admin) return c.json({ error: admin.error }, admin.status);
+
+  const parsedSearch = z
+    .string()
+    .trim()
+    .max(100)
+    .safeParse(c.req.query("search") ?? "");
+  if (!parsedSearch.success) {
+    return c.json({ error: "Search must be 100 characters or fewer." }, 400);
+  }
+
+  const rawFoodPreference = c.req.query("foodPreference");
+  const parsedFoodPreference = rawFoodPreference
+    ? z.enum(dietaryPreferences).safeParse(rawFoodPreference)
+    : undefined;
+  if (parsedFoodPreference && !parsedFoodPreference.success) {
+    return c.json({ error: "Food preference is invalid." }, 400);
+  }
+
+  const search = parsedSearch.data;
+  const foodPreference = parsedFoodPreference?.success
+    ? parsedFoodPreference.data
+    : undefined;
+  const users = await authPrisma.user.findMany({
+    where: {
+      ...(foodPreference ? { dietaryPreference: foodPreference } : {}),
+      ...(search
+        ? {
+            OR: [
+              { rollNo: { contains: search, mode: "insensitive" as const } },
+              {
+                team: {
+                  is: {
+                    name: { contains: search, mode: "insensitive" as const },
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      isAdmin: true,
+      dietaryPreference: true,
+      // joinedAt: true,
+      team: { select: { name: true } },
+    },
+  });
+
+  return c.json({
+    users: users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      teamName: user.team?.name ?? null,
+      foodPreference: user.dietaryPreference,
+    })),
+    total: users.length,
+    canPromoteAdmins: true,
+  });
+});
+
+app.post("/admin/users/:id/admin", async (c) => {
+  const admin = await getAuthenticatedAdmin();
+  if ("error" in admin) {
+    return c.json({ error: admin.error }, admin.status);
+  }
+
+  const parsedId = z
+    .string()
+    .regex(/^[a-f\d]{24}$/i)
+    .safeParse(c.req.param("id"));
+  if (!parsedId.success) return c.json({ error: "Invalid user ID." }, 400);
+
+  const target = await authPrisma.user.findUnique({
+    where: { id: parsedId.data },
+    select: { id: true, isAdmin: true },
+  });
+  if (!target) return c.json({ error: "User not found." }, 404);
+
+  if (!target.isAdmin) {
+    await authPrisma.user.update({
+      where: { id: target.id },
+      data: { isAdmin: true },
+    });
+  }
+
+  return c.json({ id: target.id, isAdmin: true });
+});
+
+app.get("/admin/admins", async (c) => {
+  const admin = await getAuthenticatedAdmin();
+  if ("error" in admin) {
+    return c.json({ error: admin.error }, admin.status);
+  }
+
+  const admins = await authPrisma.user.findMany({
+    where: { isAdmin: true },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true, email: true, rollNo: true },
+  });
+
+  return c.json({
+    admins: admins.map((user) => ({
+      ...user,
+      canRemove:
+        user.id !== admin.user.id &&
+        user.email?.trim().toLowerCase() !== "theabhik2020@gmail.com",
+      removalBlockedReason:
+        user.id === admin.user.id
+          ? "You"
+          : user.email?.trim().toLowerCase() === "theabhik2020@gmail.com"
+            ? "Protected"
+            : null,
+    })),
+    total: admins.length,
+  });
+});
+
+app.delete("/admin/admins/:id", async (c) => {
+  const admin = await getAuthenticatedAdmin();
+  if ("error" in admin) {
+    return c.json({ error: admin.error }, admin.status);
+  }
+
+  const parsedId = z
+    .string()
+    .regex(/^[a-f\d]{24}$/i)
+    .safeParse(c.req.param("id"));
+  if (!parsedId.success) return c.json({ error: "Invalid admin ID." }, 400);
+
+  const target = await authPrisma.user.findUnique({
+    where: { id: parsedId.data },
+    select: { id: true, email: true, isAdmin: true },
+  });
+  if (!target?.isAdmin) return c.json({ error: "Admin not found." }, 404);
+
+  if (target.id === admin.user.id) {
+    return c.json({ error: "You cannot remove your own admin access." }, 403);
+  }
+  if (target.email?.trim().toLowerCase() === "theabhik2020@gmail.com") {
+    return c.json({ error: "This administrator account is protected." }, 403);
+  }
+
+  await authPrisma.user.update({
+    where: { id: target.id },
+    data: { isAdmin: false },
+  });
+
+  return c.json({ id: target.id, isAdmin: false });
 });
 
 app.get("/teams/me", async (c) => {
@@ -243,6 +477,7 @@ app.post("/teams", async (c) => {
           dietaryPreference: parsed.data.dietaryPreference,
           isLeader: true,
           teamId: team.id,
+          joinedAt: new Date(),
         },
       });
       console.log(updated);
@@ -351,6 +586,7 @@ app.post("/teams/join", async (c) => {
           dietaryPreference: parsed.data.dietaryPreference,
           isLeader: false,
           teamId: team.id,
+          joinedAt: new Date(),
         },
       });
       if (updated.count !== 1) throw new Error("USER_ALREADY_ASSIGNED");
@@ -380,3 +616,4 @@ app.post("/teams/join", async (c) => {
 
 export const GET = handle(app);
 export const POST = handle(app);
+export const DELETE = handle(app);
