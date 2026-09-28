@@ -354,8 +354,8 @@ export default function RegistrationFlow() {
               <Sparkles className="h-3.5 w-3.5" /> Registration desk
             </div>
             <h1
-              id="registration-heading original-surfer-regular"
-              className="mt-7 text-5xl font-black leading-[0.94] tracking-[-0.07em] sm:text-7xl lg:text-[5.4rem]">
+              id="registration-heading "
+              className="mt-7 text-5xl font-black leading-[0.94] tracking-[-0.07em] sm:text-7xl lg:text-[5.4rem] original-surfer-regular">
               Enter the
               <span className="block text-yellow-300">Codepati Arena.</span>
             </h1>
@@ -371,7 +371,7 @@ export default function RegistrationFlow() {
                     Event dates
                   </p>
                   <p className="mt-1 text-sm font-semibold">
-                    2nd & 3rd October 2026
+                    02/10/2026 & 03/10/2026
                   </p>
                 </div>
               </div>
@@ -382,7 +382,9 @@ export default function RegistrationFlow() {
                     Location
                   </p>
                   <p className="mt-1 text-sm font-semibold">
-                    KIIT, Bhubaneswar
+                    02/10/2026: K3 Ladies club (Campus -20), Central library
+                    <br />
+                    03/10/2026: Campus 17 Auditorium
                   </p>
                 </div>
               </div>

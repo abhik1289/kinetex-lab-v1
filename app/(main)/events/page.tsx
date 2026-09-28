@@ -106,7 +106,7 @@ export default function EventsPage() {
                   Event dates
                 </p>
                 <p className="text-xs font-bold text-white sm:text-sm">
-                  02 — 03 OCT 2026
+                  02/10/2026 &amp; 03/10/2026
                 </p>
               </div>
               <div>
@@ -114,7 +114,9 @@ export default function EventsPage() {
                   Location
                 </p>
                 <p className="text-xs font-bold text-white sm:text-sm">
-                  KIIT, BHUBANESWAR
+                  02/10/2026: K3 Ladies club (Campus -20), Central library
+                  <br />
+                  03/10/2026: Campus 17 Auditorium
                 </p>
               </div>
               <div className="col-span-2 sm:col-span-1 sm:text-right">

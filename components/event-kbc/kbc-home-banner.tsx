@@ -44,18 +44,22 @@ export default function KbcHomeBanner() {
             solution, and make your case for the Codepati Crown.
           </p>
 
-          <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3">
+          <div className="mt-7 flex flex-col gap-x-6 gap-y-3 sm:flex-row sm:flex-wrap">
             <div className="flex items-center gap-2.5 text-xs font-semibold text-white/70">
               <CalendarDays
                 className="h-4 w-4 text-yellow-300"
                 aria-hidden="true"
               />
-              2 &amp; 3 October 2026
+              02/10/2026 &amp; 03/10/2026
             </div>
             <div className="flex items-center gap-2.5 text-xs font-semibold text-white/70">
               <MapPin className="h-4 w-4 text-yellow-300" aria-hidden="true" />
-              KIIT, Bhubaneswar
+              02/10/2026: K3 Ladies club (Campus -20), Central library
             </div>
+          </div>
+          <div className="mt-2 flex items-center gap-2.5 text-xs font-semibold text-white/70">
+            <MapPin className="h-4 w-4 text-yellow-300" aria-hidden="true" />
+            03/10/2026: Campus 17 Auditorium
           </div>
 
           <Link

@@ -193,7 +193,7 @@ export default function CodepatiHero() {
                     Date
                   </p>
                   <p className="mt-1 text-sm font-semibold text-white">
-                    2nd & 3rd October 2026
+                    02/10/2026 & 03/10/2026
                   </p>
                 </div>
               </div>
@@ -206,7 +206,9 @@ export default function CodepatiHero() {
                     Location
                   </p>
                   <p className="mt-1 text-sm font-semibold text-white">
-                    KIIT, Bhubaneswar
+                    02/10/2026: K3 Ladies club (Campus -20), Central library
+                    <br />
+                    03/10/2026: Campus 17 Auditorium
                   </p>
                 </div>
               </div>
