@@ -153,7 +153,7 @@ export default function CodepatiHero() {
               <span className="font-black tracking-normal">Notion</span>
               <span className="h-3.5 w-px bg-white/20" aria-hidden="true" />
               <span className="text-[9px] font-bold tracking-[0.14em] text-yellow-300">
-                Official Sponsor
+                Supported By
               </span>
             </div>
 
@@ -284,7 +284,7 @@ export default function CodepatiHero() {
                 </span>
                 <span>
                   <span className="block text-[8px] font-bold uppercase tracking-[0.14em] text-black/50">
-                    Official sponsor
+                    Supported By
                   </span>
                   <span className="mt-0.5 block text-sm font-black">
                     Notion

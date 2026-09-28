@@ -138,7 +138,7 @@ export default function KbcSponsor() {
               <SiNotion className="h-5 w-5" aria-hidden="true" />
             </span>
             <span className="text-xs font-bold uppercase tracking-[0.16em] text-white/70">
-              Official Event Sponsor
+              Supported By Notion
             </span>
           </div>
 
