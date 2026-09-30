@@ -18,8 +18,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "My Next App",
-  description: "My Next.js application",
+  title: "Admin",
+  description: "Admin Panel for mangaing KBC",
 };
 async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
