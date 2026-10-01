@@ -208,7 +208,7 @@ export default function CodepatiHero() {
                   <p className="mt-1 text-sm font-semibold text-white">
                     02/10/2026: K3 Ladies club (Campus -20), Central library
                     <br />
-                    03/10/2026: Campus 17 Auditorium
+                    03/10/2026: Campus 14 Auditorium
                   </p>
                 </div>
               </div>
