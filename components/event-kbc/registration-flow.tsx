@@ -27,6 +27,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
 
 const stages = ["Tech Quiz", "Hack It", "Pitch It", "Codepati Crown"];
+const registrationClosed = true;
 const yearOptions = ["1st Year", "2nd Year", "3rd Year", "4th Year", "Other"];
 const dietaryOptions = [
   { value: "VEG", label: "Vegetarian" },
@@ -121,49 +122,6 @@ function Field({
         className="h-12 w-full rounded-xl border border-white/10 bg-white/[0.045] px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-yellow-300/50 focus:ring-2 focus:ring-yellow-300/20 disabled:cursor-not-allowed disabled:text-white/45"
       />
     </label>
-  );
-}
-
-function GoogleButton({
-  onClick,
-  loading,
-}: {
-  onClick: () => void;
-  loading: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={loading}
-      className="group flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-yellow-300 px-5 py-4 text-sm font-black text-[#17102F] transition-all duration-300 hover:bg-yellow-200 hover:shadow-[0_0_35px_rgba(250,204,21,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-4 focus-visible:ring-offset-[#17102F] disabled:cursor-wait disabled:opacity-70">
-      {loading ? (
-        <Loader2 className="h-5 w-5 animate-spin" />
-      ) : (
-        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            fill="#4285F4"
-            d="M21.35 12.23c0-.72-.06-1.42-.18-2.09H12v3.96h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.69 2.91-4.18 2.91-7.26Z"
-          />
-          <path
-            fill="#34A853"
-            d="M12 21.5c2.63 0 4.84-.87 6.45-2.36l-3.14-2.45c-.87.58-1.98.93-3.31.93-2.54 0-4.7-1.72-5.47-4.03H3.29v2.53A9.74 9.74 0 0 0 12 21.5Z"
-          />
-          <path
-            fill="#FBBC05"
-            d="M6.53 13.59A5.86 5.86 0 0 1 6.23 12c0-.55.1-1.09.3-1.59V7.88H3.29A9.74 9.74 0 0 0 2.25 12c0 1.57.38 3.05 1.04 4.12l3.24-2.53Z"
-          />
-          <path
-            fill="#EA4335"
-            d="M12 6.38c1.43 0 2.71.49 3.72 1.45l2.79-2.79C16.83 3.48 14.63 2.5 12 2.5a9.74 9.74 0 0 0-8.71 5.38l3.24 2.53c.77-2.31 2.93-4.03 5.47-4.03Z"
-          />
-        </svg>
-      )}
-      {loading ? "Opening Google..." : "Continue with Google"}
-      {!loading && (
-        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-      )}
-    </button>
   );
 }
 
@@ -427,28 +385,27 @@ export default function RegistrationFlow() {
                     <LockKeyhole className="h-5 w-5 text-yellow-300" />
                   </div>
                   <p className="mt-8 text-xs font-bold uppercase tracking-[0.2em] text-yellow-300">
-                    {isJoinFlow ? "Team invitation" : "Claim your spot"}
+                    Sign in to check your registration
                   </p>
                   <h2
                     id="registration-card-heading"
                     className="mt-3 text-3xl font-black leading-tight sm:text-4xl">
-                    {isJoinFlow && inviteQuery.data
-                      ? `Join ${inviteQuery.data.name}.`
-                      : "Ready to test your knowledge?"}
+                    Continue with your KIIT Google account.
                   </h2>
                   <p className="mt-4 text-sm leading-7 text-white/50">
-                    Sign in with your KIIT Google account to continue. Your
-                    Google email is used as your event identity.
+                    Sign in with your KIIT Google account to check your
+                    registration.
                   </p>
-                  {inviteQuery.isError && (
-                    <ErrorNotice message={inviteQuery.error.message} />
-                  )}
-                  <div className="mt-8">
-                    <GoogleButton onClick={signInToRegister} loading={false} />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={signInToRegister}
+                    className="mt-8 flex min-h-14 w-full items-center justify-center gap-3 rounded-2xl bg-yellow-300 px-5 py-4 text-sm font-black text-[#17102F] transition hover:bg-yellow-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-300 focus-visible:ring-offset-4 focus-visible:ring-offset-[#17102F]">
+                    Continue with Google
+                    <ArrowUpRight className="h-4 w-4" />
+                  </button>
                   <div className="mt-7 flex items-center justify-center gap-2 text-xs text-white/40">
-                    <ShieldCheck className="h-4 w-4 text-yellow-300/80" /> KIIT
-                    account only · No password required
+                    <ShieldCheck className="h-4 w-4 text-yellow-300/80" />
+                    KIIT account only
                   </div>
                 </div>
               )}
@@ -600,7 +557,8 @@ export default function RegistrationFlow() {
 
               {!isLoading &&
                 sessionStatus === "authenticated" &&
-                !statusQuery.data?.registered && (
+                !statusQuery.data?.registered &&
+                !registrationClosed && (
                   <form
                     onSubmit={(event) => {
                       event.preventDefault();
@@ -782,6 +740,26 @@ export default function RegistrationFlow() {
                       registration.
                     </div>
                   </form>
+                )}
+
+              {!isLoading &&
+                sessionStatus === "authenticated" &&
+                statusQuery.isSuccess &&
+                statusQuery.data.registered === false && (
+                  <div className="py-8 text-center" role="alert">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-yellow-300/20 bg-yellow-300/10">
+                      <LockKeyhole className="h-5 w-5 text-yellow-300" />
+                    </div>
+                    <h2
+                      id="registration-card-heading"
+                      className="mt-6 text-3xl font-black leading-tight sm:text-4xl">
+                      New registration is closed.
+                    </h2>
+                    <p className="mt-3 text-sm leading-7 text-white/50">
+                      New registrations and team invites are no longer being
+                      accepted.
+                    </p>
+                  </div>
                 )}
 
               {!isLoading &&

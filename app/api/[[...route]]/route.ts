@@ -7,38 +7,8 @@ import { z } from "zod";
 
 const app = new Hono().basePath("/api");
 
-const years = [
-  "1st Year",
-  "2nd Year",
-  "3rd Year",
-  "4th Year",
-  "Other",
-] as const;
+const registrationClosedMessage = "Registration closed already.";
 const dietaryPreferences = ["VEG", "NON_VEG"] as const;
-
-const profileSchema = z.object({
-  name: z.string().trim().min(2).max(80),
-  rollNo: z
-    .string()
-    .trim()
-    .min(3)
-    .max(30)
-    .regex(/^[a-zA-Z0-9-]+$/),
-  year: z.enum(years),
-  mobile: z
-    .string()
-    .trim()
-    .regex(/^[6-9]\d{9}$/),
-  dietaryPreference: z.enum(dietaryPreferences),
-});
-
-const leaderSchema = profileSchema.extend({
-  teamName: z.string().trim().min(3).max(30),
-});
-
-const joinSchema = profileSchema.extend({
-  token: z.string().trim().min(20).max(100),
-});
 
 const normalizeTeamName = (value: string) =>
   value.trim().replace(/\s+/g, " ").toUpperCase();
@@ -403,108 +373,8 @@ app.get("/teams/check", async (c) => {
   });
 });
 
-app.post("/teams", async (c) => {
-  const authenticated = await getAuthenticatedUser();
-
-  if ("error" in authenticated)
-    return c.json({ error: authenticated.error }, 401);
-
-  const parsed = leaderSchema.safeParse(await c.req.json());
-  if (!parsed.success)
-    return c.json(
-      { error: "Check the highlighted details and try again." },
-      400,
-    );
-
-  const name = normalizeTeamName(parsed.data.teamName);
-  if (authenticated.user.teamId) {
-    const existingTeam = await authPrisma.team.findUnique({
-      where: { id: authenticated.user.teamId },
-      select: { name: true },
-    });
-
-    return c.json(
-      {
-        error: existingTeam
-          ? `You already belong to team \"${existingTeam.name}\".`
-          : "Your previous team link was stale. Refresh and try again.",
-      },
-      409,
-    );
-  }
-
-  const userExits = await authPrisma.user.findFirst({
-    where: {
-      id: authenticated.user.id,
-    },
-  });
-
-  console.log("THE USER IS: ", userExits);
-
-  try {
-    const result = await authPrisma.$transaction(async (tx) => {
-      const team = await tx.team.create({
-        data: {
-          name,
-          inviteToken: crypto.randomUUID(),
-          leaderEmail: authenticated.email,
-          leaderRollNo: parsed.data.rollNo,
-          leaderMobile: parsed.data.mobile,
-        },
-      });
-
-      const user = await tx.user.findUnique({
-        where: {
-          id: authenticated.user.id,
-        },
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      if (user.teamId !== null) {
-        throw new Error("User is already part of a team");
-      }
-
-      const updated = await tx.user.update({
-        where: { id: authenticated.user.id },
-        data: {
-          name: parsed.data.name,
-          rollNo: parsed.data.rollNo,
-          year: parsed.data.year,
-          mobile: parsed.data.mobile,
-          dietaryPreference: parsed.data.dietaryPreference,
-          isLeader: true,
-          teamId: team.id,
-          joinedAt: new Date(),
-        },
-      });
-      console.log(updated);
-
-      // if (updated.count !== 1) throw new Error("USER_ALREADY_ASSIGNED");
-      return { teamName: team.name, inviteToken: team.inviteToken };
-    });
-
-    return c.json(result, 201);
-  } catch (error) {
-    if (error instanceof Error && error.message === "USER_ALREADY_ASSIGNED") {
-      return c.json({ error: "You already belong to a team." }, 409);
-    }
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "P2002"
-    ) {
-      return c.json({ error: "That team name is already taken." }, 409);
-    }
-    console.error("Team creation failed", error);
-    return c.json(
-      { error: "We could not create your team. Please try again." },
-      500,
-    );
-  }
+app.post("/teams", (c) => {
+  return c.json({ error: registrationClosedMessage }, 410);
 });
 
 app.get("/teams/join", async (c) => {
@@ -530,88 +400,8 @@ app.get("/teams/join", async (c) => {
   });
 });
 
-app.post("/teams/join", async (c) => {
-  const authenticated = await getAuthenticatedUser();
-
-  console.log("USER IS IN JOIN", authenticated);
-
-  if ("error" in authenticated)
-    return c.json({ error: authenticated.error }, 401);
-
-  const parsed = joinSchema.safeParse(await c.req.json());
-
-  console.log("AFETR ZOD VCALIDATIOn", parsed);
-
-  if (!parsed.success) {
-    return c.json(
-      { error: "Check the highlighted details and try again." },
-      400,
-    );
-  }
-  if (authenticated.user.teamId !== null) {
-    // console.log("THIS IS CALLED");
-    return c.json({ error: "You already belong to a team." }, 409);
-  }
-  console.log("THIS IS PASSED");
-
-  try {
-    const result = await authPrisma.$transaction(async (tx) => {
-      const team = await tx.team.findUnique({
-        where: { inviteToken: parsed.data.token },
-        include: { members: { select: { id: true } } },
-      });
-      // console.log("JOIN TEAM", team);
-      if (!team) throw new Error("INVITE_NOT_FOUND");
-      if (team.members.length > 3) throw new Error("TEAM_FULL");
-      const user = await tx.user.findUnique({
-        where: {
-          id: authenticated.user.id,
-        },
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      if (user.teamId !== null) {
-        throw new Error("User is already part of a team");
-      }
-      const updated = await tx.user.updateMany({
-        where: { id: authenticated.user.id },
-        data: {
-          name: parsed.data.name,
-          rollNo: parsed.data.rollNo,
-          year: parsed.data.year,
-          mobile: parsed.data.mobile,
-          dietaryPreference: parsed.data.dietaryPreference,
-          isLeader: false,
-          teamId: team.id,
-          joinedAt: new Date(),
-        },
-      });
-      if (updated.count !== 1) throw new Error("USER_ALREADY_ASSIGNED");
-      return { teamName: team.name };
-    });
-
-    return c.json(result, 201);
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.message === "INVITE_NOT_FOUND")
-        return c.json(
-          { error: "This invite link is invalid or expired." },
-          404,
-        );
-      if (error.message === "TEAM_FULL")
-        return c.json({ error: "This team already has three members." }, 409);
-      if (error.message === "USER_ALREADY_ASSIGNED")
-        return c.json({ error: "You already belong to a team." }, 409);
-    }
-    console.error("Team join failed", error);
-    return c.json(
-      { error: "We could not join this team. Please try again." },
-      500,
-    );
-  }
+app.post("/teams/join", (c) => {
+  return c.json({ error: registrationClosedMessage }, 410);
 });
 
 export const GET = handle(app);
