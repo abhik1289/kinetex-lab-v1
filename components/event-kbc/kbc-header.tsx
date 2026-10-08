@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import gsap from "gsap";
-import { ArrowUpRight, Menu, Sparkles, Trophy, X } from "lucide-react";
+import { ArrowUpRight, Award, Menu, Sparkles, Trophy, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 const navLinks = [
@@ -170,6 +170,12 @@ export default function CodepatiNavbar() {
           </div>
 
           <Link
+            href="/event-kbc/my-certificate"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-3 text-xs font-bold text-white/75 transition-colors hover:border-yellow-300/40 hover:text-yellow-200">
+            <Award className="h-4 w-4" aria-hidden="true" />
+            My Certificate
+          </Link>
+          <Link
             href="/event-kbc/registration"
             className="group inline-flex items-center gap-2 rounded-full bg-yellow-300 px-5 py-3 text-xs font-black text-[#100B25] transition-all duration-300 hover:bg-yellow-200 hover:shadow-[0_0_30px_rgba(250,204,21,0.2)]">
             {registrationLabel}
@@ -209,6 +215,14 @@ export default function CodepatiNavbar() {
         </div>
 
         <div className="my-3 h-px bg-white/10" />
+
+        <Link
+          href="/event-kbc/my-certificate"
+          onClick={closeMenu}
+          className="mobile-nav-link flex items-center justify-center gap-2 rounded-xl border border-white/10 px-5 py-3.5 text-sm font-bold text-white/80 transition-colors hover:border-yellow-300/30 hover:text-yellow-200">
+          <Award className="h-4 w-4" aria-hidden="true" />
+          My Certificate
+        </Link>
 
         <Link
           href="/event-kbc/registration"

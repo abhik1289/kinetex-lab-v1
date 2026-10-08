@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, Search, ShieldCheck, UserRoundPlus } from "lucide-react";
+import {
+  Award,
+  Download,
+  Search,
+  ShieldCheck,
+  UserRoundPlus,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,9 +39,11 @@ type UserRow = {
   id: string;
   name: string | null;
   email: string | null;
+  rollNo: string | null;
   isAdmin: boolean;
   teamName: string | null;
   foodPreference: string | null;
+  certificateEligible: boolean;
 };
 
 type UsersResponse = {
@@ -68,6 +76,23 @@ async function promoteToAdmin(user: UserRow) {
       error?: string;
     } | null;
     throw new Error(result?.error ?? "Could not approve this administrator.");
+  }
+}
+
+async function setCertificateEligibility(user: UserRow) {
+  const response = await fetch(
+    `/api/admin/users/${user.id}/certificate-eligibility`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eligible: !user.certificateEligible }),
+    },
+  );
+  if (!response.ok) {
+    const result = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+    throw new Error(result?.error ?? "Could not update certificate eligibility.");
   }
 }
 
@@ -137,6 +162,11 @@ export function UsersTable() {
         }),
       ]);
     },
+  });
+  const certificateMutation = useMutation({
+    mutationFn: setCertificateEligibility,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] }),
   });
   const users = usersQuery.data?.users ?? [];
   const pageCount = Math.max(1, Math.ceil(users.length / pageSize));
@@ -221,8 +251,10 @@ export function UsersTable() {
               <TableHead className="w-16">Sl No</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
+              <TableHead>Roll No.</TableHead>
               <TableHead>Team Name</TableHead>
               <TableHead>Food Preference</TableHead>
+              <TableHead>Certificate</TableHead>
               <TableHead className="w-24 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -230,14 +262,14 @@ export function UsersTable() {
             {usersQuery.isPending ? (
               Array.from({ length: 5 }, (_, index) => (
                 <TableRow key={index}>
-                  <TableCell colSpan={6}>
+                  <TableCell colSpan={8}>
                     <div className="h-5 animate-pulse rounded bg-muted" />
                   </TableCell>
                 </TableRow>
               ))
             ) : usersQuery.isError ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-28 text-center">
+                <TableCell colSpan={8} className="h-28 text-center">
                   <p className="font-medium">Unable to load users</p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {usersQuery.error.message}
@@ -254,6 +286,7 @@ export function UsersTable() {
                     {user.name || "—"}
                   </TableCell>
                   <TableCell>{user.email || "—"}</TableCell>
+                  <TableCell>{user.rollNo || "—"}</TableCell>
                   <TableCell>{user.teamName || "—"}</TableCell>
                   <TableCell>
                     {user.foodPreference ? (
@@ -267,6 +300,28 @@ export function UsersTable() {
                     ) : (
                       "—"
                     )}
+                  </TableCell>
+                  <TableCell>
+                    {user.certificateEligible ? (
+                      <Badge variant="secondary">Eligible</Badge>
+                    ) : (
+                      <span className="text-muted-foreground">Not marked</span>
+                    )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="ml-1"
+                      disabled={
+                        certificateMutation.isPending ||
+                        (!user.certificateEligible &&
+                          (!user.name?.trim() || !user.rollNo?.trim()))
+                      }
+                      aria-label={`${user.certificateEligible ? "Remove certificate eligibility from" : "Mark certificate eligible"} ${user.name || user.email || "user"}`}
+                      onClick={() => certificateMutation.mutate(user)}>
+                      <Award aria-hidden="true" />
+                      {user.certificateEligible ? "Revoke" : "Mark"}
+                    </Button>
                   </TableCell>
                   <TableCell className="text-right">
                     {user.isAdmin ? (
@@ -296,7 +351,7 @@ export function UsersTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="h-28 text-center">
+                <TableCell colSpan={8} className="h-28 text-center">
                   <p className="font-medium">No users found</p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Change or clear the current filters to see more results.
@@ -307,6 +362,12 @@ export function UsersTable() {
           </TableBody>
         </Table>
       </div>
+
+      {certificateMutation.isError && (
+        <p role="alert" className="text-sm text-destructive">
+          {certificateMutation.error.message}
+        </p>
+      )}
 
       <div className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>

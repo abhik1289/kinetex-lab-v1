@@ -9,7 +9,7 @@ export default function UsersPage() {
         </p>
         <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
         <p className="text-sm text-muted-foreground">
-          Review registrations, team assignments, and food preferences.
+          Review registrations, team assignments, and certificate eligibility.
         </p>
       </header>
       <UsersTable />

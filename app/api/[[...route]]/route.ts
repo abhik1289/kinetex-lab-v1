@@ -4,11 +4,22 @@ import { auth } from "@/lib/config/auth";
 import { authPrisma } from "@/lib/config/prisma";
 // import { isKIITEmail } from "@/lib/utils";
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
 
 const app = new Hono().basePath("/api");
 
 const registrationClosedMessage = "Registration closed already.";
 const dietaryPreferences = ["VEG", "NON_VEG"] as const;
+const certificateNotAvailableMessage =
+  "Certificate not available. You were not registered/marked as a participant for Kaun Banega Codepati 2026.";
+const certificateDemo = {
+  name: "Abhik Patra",
+  rollNo: "2305588",
+  certificateId: "KBC26-DEMO-2305588",
+};
+
+const normalizeCertificateValue = (value: string) =>
+  value.trim().replace(/\s+/g, " ").toLocaleLowerCase("en");
 
 const normalizeTeamName = (value: string) =>
   value.trim().replace(/\s+/g, " ").toUpperCase();
@@ -176,7 +187,8 @@ app.get("/admin/users", async (c) => {
       email: true,
       isAdmin: true,
       dietaryPreference: true,
-      // joinedAt: true,
+      rollNo: true,
+      certificateEligible: true,
       team: { select: { name: true } },
     },
   });
@@ -187,11 +199,163 @@ app.get("/admin/users", async (c) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      rollNo: user.rollNo,
       teamName: user.team?.name ?? null,
       foodPreference: user.dietaryPreference,
+      certificateEligible: user.certificateEligible,
     })),
     total: users.length,
     canPromoteAdmins: true,
+  });
+});
+
+app.post("/admin/users/:id/certificate-eligibility", async (c) => {
+  const admin = await getAuthenticatedAdmin();
+  if ("error" in admin) return c.json({ error: admin.error }, admin.status);
+
+  const parsedId = z
+    .string()
+    .regex(/^[a-f\d]{24}$/i)
+    .safeParse(c.req.param("id"));
+  if (!parsedId.success) return c.json({ error: "Invalid user ID." }, 400);
+
+  const parsedBody = z
+    .object({ eligible: z.boolean() })
+    .safeParse(await c.req.json().catch(() => null));
+  if (!parsedBody.success) {
+    return c.json({ error: "Certificate eligibility value is invalid." }, 400);
+  }
+
+  const user = await authPrisma.user.findUnique({
+    where: { id: parsedId.data },
+    select: { id: true, name: true, rollNo: true },
+  });
+  if (!user) return c.json({ error: "User not found." }, 404);
+  if (parsedBody.data.eligible && (!user.name?.trim() || !user.rollNo?.trim())) {
+    return c.json(
+      { error: "Add the student's name and roll number before marking eligibility." },
+      400,
+    );
+  }
+
+  const updated = await authPrisma.user.update({
+    where: { id: user.id },
+    data: { certificateEligible: parsedBody.data.eligible },
+    select: { id: true, certificateEligible: true },
+  });
+  if (!parsedBody.data.eligible) {
+    await authPrisma.kbcCertificate.deleteMany({
+      where: { userId: updated.id },
+    });
+  }
+  return c.json(updated);
+});
+
+app.post("/certificate", async (c) => {
+  const parsed = z
+    .object({
+      name: z.string().trim().min(1).max(100),
+      rollNo: z.string().trim().min(1).max(32),
+    })
+    .safeParse(await c.req.json().catch(() => null));
+  if (!parsed.success) {
+    return c.json({ error: "Enter a valid name and roll number." }, 400);
+  }
+
+  if (
+    process.env.NODE_ENV !== "production" &&
+    normalizeCertificateValue(parsed.data.name) ===
+      normalizeCertificateValue(certificateDemo.name) &&
+    normalizeCertificateValue(parsed.data.rollNo) ===
+      normalizeCertificateValue(certificateDemo.rollNo)
+  ) {
+    return c.json({
+      available: true,
+      ...certificateDemo,
+      verificationPath: `/event-kbc/verify/${certificateDemo.certificateId}`,
+    });
+  }
+
+  const session = await auth();
+  const email = session?.user?.email?.trim().toLowerCase();
+  if (!email) return c.json({ error: "Sign in to verify your certificate." }, 401);
+
+  const user = await authPrisma.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      name: true,
+      rollNo: true,
+      certificateEligible: true,
+    },
+  });
+
+  if (
+    !user ||
+    normalizeCertificateValue(parsed.data.name) !==
+      normalizeCertificateValue(user.name ?? "") ||
+    normalizeCertificateValue(parsed.data.rollNo) !==
+      normalizeCertificateValue(user.rollNo ?? "") ||
+    !user.certificateEligible
+  ) {
+    return c.json({
+      available: false,
+      message: certificateNotAvailableMessage,
+    });
+  }
+
+  const certificate = await authPrisma.kbcCertificate.upsert({
+    where: { userId: user.id },
+    create: {
+      userId: user.id,
+      certificateId: `KBC26-${randomUUID().replaceAll("-", "").toUpperCase()}`,
+    },
+    update: {},
+    select: { certificateId: true },
+  });
+  return c.json({
+    available: true,
+    name: user.name,
+    rollNo: user.rollNo,
+    certificateId: certificate.certificateId,
+    verificationPath: `/event-kbc/verify/${certificate.certificateId}`,
+  });
+});
+
+app.get("/certificate/verify/:certificateId", async (c) => {
+  const certificateId = c.req.param("certificateId").trim().toUpperCase();
+
+  if (
+    process.env.NODE_ENV !== "production" &&
+    certificateId === certificateDemo.certificateId
+  ) {
+    return c.json({
+      valid: true,
+      ...certificateDemo,
+      event: "Kaun Banega Codepati 2026",
+    });
+  }
+
+  const certificate = await authPrisma.kbcCertificate.findUnique({
+    where: { certificateId },
+    include: {
+      user: {
+        select: { name: true, rollNo: true, certificateEligible: true },
+      },
+    },
+  });
+  const user = certificate?.user;
+
+  if (!user || !user.certificateEligible) {
+    return c.json({ valid: false });
+  }
+
+  return c.json({
+    valid: true,
+    name: user.name,
+    rollNo: user.rollNo,
+    certificateId,
+    event: "Kaun Banega Codepati 2026",
   });
 });
 

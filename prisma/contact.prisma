@@ -19,9 +19,11 @@ model User {
   dietaryPreference String?
   isLeader          Boolean   @default(false)
   isAdmin           Boolean   @default(false)
+  certificateEligible Boolean  @default(false)
   teamId            String?   @db.ObjectId
   joinedAt          DateTime?
   team              Team?     @relation(fields: [teamId], references: [id])
+  kbcCertificate    KbcCertificate?
   accounts          Account[]
   sessions          Session[]
 
@@ -37,6 +39,16 @@ model Team {
   leaderMobile String
   members      User[]
   createdAt    DateTime @default(now())
+}
+
+model KbcCertificate {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  certificateId String   @unique
+  userId        String   @unique @db.ObjectId
+  issuedAt      DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("kbc_certificates")
 }
 
 model Account {
