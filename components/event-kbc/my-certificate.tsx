@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { signIn } from "next-auth/react";
 import { ArrowLeft, Award, Download, ShieldCheck } from "lucide-react";
+import { toPng } from "html-to-image";
 
 type Certificate = {
   name: string;
@@ -23,6 +24,8 @@ type CertificateResponse = {
   verificationPath?: string;
 };
 
+type DownloadFormat = "pdf" | "png";
+
 export default function MyCertificate() {
   const [name, setName] = useState("");
   const [rollNo, setRollNo] = useState("");
@@ -30,6 +33,10 @@ export default function MyCertificate() {
   const [message, setMessage] = useState("");
   const [requiresSignIn, setRequiresSignIn] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const [downloadFormat, setDownloadFormat] = useState<DownloadFormat>("pdf");
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState("");
+  const certificateRef = useRef<HTMLElement>(null);
 
   async function checkEligibility(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -88,6 +95,53 @@ export default function MyCertificate() {
       );
     } finally {
       setIsChecking(false);
+    }
+  }
+
+  async function downloadCertificate() {
+    const certificateElement = certificateRef.current;
+    if (!certificateElement || !certificate) return;
+
+    setIsDownloading(true);
+    setDownloadError("");
+
+    try {
+      await document.fonts.ready;
+      const imageData = await toPng(certificateElement, {
+        backgroundColor: "#fffef9",
+        pixelRatio: 3,
+        cacheBust: true,
+      });
+      const filename = `KBC-2026-${certificate.rollNo}`;
+
+      if (downloadFormat === "png") {
+        const imageBlob = await (await fetch(imageData)).blob();
+        const imageUrl = URL.createObjectURL(imageBlob);
+        const link = document.createElement("a");
+        link.href = imageUrl;
+        link.download = `${filename}.png`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(imageUrl), 1000);
+        return;
+      }
+
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+        compress: true,
+      });
+      pdf.addImage(imageData, "PNG", 0, 0, 297, 210);
+      pdf.save(`${filename}.pdf`);
+    } catch (error) {
+      setDownloadError(
+        error instanceof Error
+          ? error.message
+          : "Could not download the certificate. Please try again.",
+      );
+    } finally {
+      setIsDownloading(false);
     }
   }
 
@@ -189,17 +243,47 @@ export default function MyCertificate() {
                 <ShieldCheck className="size-4" aria-hidden="true" />
                 Your certificate is verified and ready.
               </p>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-lg border border-amber-200/30 bg-amber-200 px-4 text-sm font-bold text-[#211700] transition hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
-                <Download className="size-4" aria-hidden="true" />
-                Download PDF
-              </button>
+              <div className="flex flex-wrap items-center gap-3">
+                <fieldset className="certificate-format-picker">
+                  <legend className="sr-only">Certificate download format</legend>
+                  {(["pdf", "png"] as const).map((format) => (
+                    <label
+                      key={format}
+                      className={`certificate-format-option ${downloadFormat === format ? "is-selected" : ""}`}>
+                      <input
+                        type="radio"
+                        name="certificate-format"
+                        value={format}
+                        checked={downloadFormat === format}
+                        onChange={() => setDownloadFormat(format)}
+                      />
+                      {format === "pdf" ? "PDF" : "Image"}
+                    </label>
+                  ))}
+                </fieldset>
+                <button
+                  type="button"
+                  onClick={() => void downloadCertificate()}
+                  disabled={isDownloading}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-lg border border-amber-200/30 bg-amber-200 px-4 text-sm font-bold text-[#211700] transition hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:cursor-wait disabled:opacity-60">
+                  <Download className="size-4" aria-hidden="true" />
+                  {isDownloading
+                    ? "Preparing download..."
+                    : `Download ${downloadFormat === "pdf" ? "PDF" : "Image"}`}
+                </button>
+              </div>
             </div>
+            {downloadError && (
+              <p
+                role="alert"
+                className="certificate-controls mb-3 text-sm text-red-200">
+                {downloadError}
+              </p>
+            )}
 
             <div className="certificate-scroll overflow-x-auto pb-2">
               <article
+                ref={certificateRef}
                 className="kbc-certificate mx-auto"
                 aria-label="Certificate of Excellence">
                 <Image
@@ -274,21 +358,20 @@ export default function MyCertificate() {
                   <h2 className="certificate-title">
                     Certificate of Excellence
                   </h2>
-                  <div
-                    style={{
-                      marginTop: "9%",
-                    }}
-                    className="name_wrapper">
-                    <strong>{certificate.name}</strong>
+                  <div className="certificate-recipient">
+                    <p className="certificate-recipient-name">
+                      {certificate.name}
+                    </p>
+                    {/* <p className="certificate-recipient-roll">
+                      Roll No. {certificate.rollNo}
+                    </p> */}
                     <div className="certificate-divider" />
                   </div>
 
                   <p className="certificate-copy">
-                    This is to certify that <strong>{certificate.name}</strong>{" "}
-                    (Roll No. <strong>{certificate.rollNo}</strong>) has served
-                    as a valued member of the{" "}
-                    <strong>Organizing Committee</strong> for{" "}
-                    <strong>KAUN BANEGA CODEPATI 2026</strong>, a
+                    This is to certify that the above mentioned, has served as a
+                    valued member of the <strong>Organizing Committee</strong>{" "}
+                    for <strong>KAUN BANEGA CODEPATI 2026</strong>, a
                     quiz-cum-vibeathon challenge presented by Kinetex Lab, and
                     is hereby recognized for their dedication, leadership,
                     coordination, and valuable contribution towards the
@@ -297,17 +380,11 @@ export default function MyCertificate() {
 
                   <div className="certificate-signatures">
                     <div className="certificate-signature">
-                      <span className="certificate-handwritten">
-                        Ajit Pasayat
-                      </span>
                       <div className="certificate-signature-rule" />
                       <strong>Dr. Ajit Pasayat</strong>
                       <span>Associate Dean, KSAC</span>
                     </div>
                     <div className="certificate-signature">
-                      <span className="certificate-handwritten">
-                        Gipsita Nayak
-                      </span>
                       <div className="certificate-signature-rule" />
                       <strong>Ms. Gipsita Nayak</strong>
                       <span>Dy. Director, KSAC</span>
@@ -334,10 +411,6 @@ export default function MyCertificate() {
               </article>
             </div>
 
-            <p className="certificate-controls mt-3 text-center text-xs text-white/55">
-              In the print dialog, choose <strong>Save as PDF</strong> to
-              download your certificate.
-            </p>
           </section>
         )}
       </div>
