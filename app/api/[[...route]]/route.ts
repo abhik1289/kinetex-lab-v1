@@ -231,9 +231,15 @@ app.post("/admin/users/:id/certificate-eligibility", async (c) => {
     select: { id: true, name: true, rollNo: true },
   });
   if (!user) return c.json({ error: "User not found." }, 404);
-  if (parsedBody.data.eligible && (!user.name?.trim() || !user.rollNo?.trim())) {
+  if (
+    parsedBody.data.eligible &&
+    (!user.name?.trim() || !user.rollNo?.trim())
+  ) {
     return c.json(
-      { error: "Add the student's name and roll number before marking eligibility." },
+      {
+        error:
+          "Add the student's name and roll number before marking eligibility.",
+      },
       400,
     );
   }
@@ -263,7 +269,7 @@ app.post("/certificate", async (c) => {
   }
 
   if (
-    process.env.NODE_ENV !== "production" &&
+    process.env.NODE_ENV == "production" &&
     normalizeCertificateValue(parsed.data.name) ===
       normalizeCertificateValue(certificateDemo.name) &&
     normalizeCertificateValue(parsed.data.rollNo) ===
@@ -278,7 +284,8 @@ app.post("/certificate", async (c) => {
 
   const session = await auth();
   const email = session?.user?.email?.trim().toLowerCase();
-  if (!email) return c.json({ error: "Sign in to verify your certificate." }, 401);
+  if (!email)
+    return c.json({ error: "Sign in to verify your certificate." }, 401);
 
   const user = await authPrisma.user.findUnique({
     where: { email },
