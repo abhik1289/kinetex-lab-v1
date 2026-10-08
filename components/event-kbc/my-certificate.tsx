@@ -26,6 +26,18 @@ type CertificateResponse = {
 
 type DownloadFormat = "pdf" | "png";
 
+function saveBlob(blob: Blob, filename: string) {
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = filename;
+  link.hidden = true;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+}
+
 export default function MyCertificate() {
   const [name, setName] = useState("");
   const [rollNo, setRollNo] = useState("");
@@ -33,7 +45,7 @@ export default function MyCertificate() {
   const [message, setMessage] = useState("");
   const [requiresSignIn, setRequiresSignIn] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
-  const [downloadFormat, setDownloadFormat] = useState<DownloadFormat>("pdf");
+  const [downloadFormat, setDownloadFormat] = useState<DownloadFormat>("png");
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState("");
   const certificateRef = useRef<HTMLElement>(null);
@@ -116,12 +128,7 @@ export default function MyCertificate() {
 
       if (downloadFormat === "png") {
         const imageBlob = await (await fetch(imageData)).blob();
-        const imageUrl = URL.createObjectURL(imageBlob);
-        const link = document.createElement("a");
-        link.href = imageUrl;
-        link.download = `${filename}.png`;
-        link.click();
-        window.setTimeout(() => URL.revokeObjectURL(imageUrl), 1000);
+        saveBlob(imageBlob, `${filename}.png`);
         return;
       }
 
@@ -133,7 +140,7 @@ export default function MyCertificate() {
         compress: true,
       });
       pdf.addImage(imageData, "PNG", 0, 0, 297, 210);
-      pdf.save(`${filename}.pdf`);
+      saveBlob(pdf.output("blob"), `${filename}.pdf`);
     } catch (error) {
       setDownloadError(
         error instanceof Error
@@ -243,10 +250,12 @@ export default function MyCertificate() {
                 <ShieldCheck className="size-4" aria-hidden="true" />
                 Your certificate is verified and ready.
               </p>
-              <div className="flex flex-wrap items-center gap-3">
+              {/* <div className="flex flex-wrap items-center gap-3">
                 <fieldset className="certificate-format-picker">
-                  <legend className="sr-only">Certificate download format</legend>
-                  {(["pdf", "png"] as const).map((format) => (
+                  <legend className="sr-only">
+                    Certificate download format
+                  </legend>
+                  {(["png"] as const).map((format) => (
                     <label
                       key={format}
                       className={`certificate-format-option ${downloadFormat === format ? "is-selected" : ""}`}>
@@ -271,7 +280,7 @@ export default function MyCertificate() {
                     ? "Preparing download..."
                     : `Download ${downloadFormat === "pdf" ? "PDF" : "Image"}`}
                 </button>
-              </div>
+              </div> */}
             </div>
             {downloadError && (
               <p
@@ -337,15 +346,11 @@ export default function MyCertificate() {
                       aria-label="KSAC logo placeholder">
                       <span>KSAC</span>
                     </div>
-                    <span className="certificate-kiit-crop">
-                      <Image
-                        src="/images/images.png"
-                        width={342}
-                        height={98}
-                        alt="KIIT"
-                        className="certificate-kiit-logo"
-                      />
-                    </span>
+                    <span
+                      className="certificate-kiit-crop"
+                      role="img"
+                      aria-label="KIIT logo"
+                    />
                     <Image
                       src="/images/logo1.png"
                       width={48}
@@ -410,7 +415,6 @@ export default function MyCertificate() {
                 </div>
               </article>
             </div>
-
           </section>
         )}
       </div>

@@ -206,7 +206,7 @@
   flex: 1;
   flex-direction: column;
   align-items: center;
-  padding: 6.5% 12% 5.5%;
+  padding: 5.5% 12% 2%;
   text-align: center;
 }
 
@@ -234,16 +234,10 @@
   display: block;
   width: clamp(72px, 9vw, 100px);
   height: clamp(54px, 7vw, 72px);
-  overflow: hidden;
-}
-
-.certificate-kiit-logo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: clamp(240px, 30vw, 300px);
-  height: auto;
-  max-width: none;
+  background-image: url("/images/images.png");
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: clamp(240px, 30vw, 300px) auto;
 }
 
 .certificate-kinetex-logo {
@@ -253,7 +247,7 @@
 }
 
 .certificate-title {
-  margin-top: 3.4%;
+  margin-top: 2%;
   font-family: "Bodoni MT", Didot, Georgia, serif;
   font-size: clamp(37px, 5.5vw, 64px);
   font-weight: 400;
@@ -263,7 +257,7 @@
 
 .certificate-recipient {
   width: 67%;
-  margin-top: 7%;
+  margin-top: 4%;
 }
 
 .certificate-recipient-name {
@@ -286,9 +280,9 @@
 
 .certificate-copy {
   max-width: 790px;
-  margin-top: 5%;
+  margin-top: 3%;
   font-size: clamp(11px, 1.3vw, 14px);
-  line-height: 1.85;
+  line-height: 1.65;
 }
 
 .certificate-copy strong {
@@ -296,13 +290,14 @@
 }
 
 .certificate-signatures {
+  position: absolute;
+  right: 12%;
+  bottom: 20%;
+  left: 12%;
   display: grid;
-  width: 100%;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: end;
   gap: 7%;
-  margin-top: 23px;
-  padding-top: 38px;
 }
 
 .certificate-signature {
@@ -428,7 +423,6 @@
 
   .certificate-signatures {
     gap: 4%;
-    padding-top: 20px;
   }
 
   .certificate-signature {
